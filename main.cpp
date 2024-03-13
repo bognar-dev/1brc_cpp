@@ -12,11 +12,12 @@ int main() {
         std::cerr << "Error: file not found" << std::endl;
         return 1;
     }
+    std::cout<< "File opened successfully" << std::endl;
     //read the file line by line
     std::string line;
 
     std::map<std::string, std::vector<std::string>> data;
-    //data format Tokyo;35.6897 \n Jakarta;-6.1750 \n Delhi;28.6100 \n Tokyo;35.6897 \n Jakarta;-6.1750 \n Delhi;28.6100
+
     while (std::getline(file, line)) {
         std::string station;
         std::string temperature;
@@ -25,6 +26,7 @@ int main() {
         std::getline(ss, temperature, ';');
         data[station].push_back(temperature);
     }
+    std::cout << "Data read successfully" << std::endl;
     file.close();
 
     // find min max and average temperature for each station and print it
