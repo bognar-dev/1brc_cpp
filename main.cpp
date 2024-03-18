@@ -4,15 +4,16 @@
 #include <vector>
 #include <sstream>
 
-int main() {
+
+std::map<std::string, std::vector<std::string>> readFile() {
     //read the csv file from data folder
     std::ifstream file("../data/measurements.txt");
     //check for errors
     if (!file.is_open()) {
         std::cerr << "Error: file not found" << std::endl;
-        return 1;
+        return {};
     }
-    std::cout<< "File opened successfully" << std::endl;
+    std::cout << "File opened successfully" << std::endl;
     //read the file line by line
     std::string line;
 
@@ -28,9 +29,12 @@ int main() {
     }
     std::cout << "Data read successfully" << std::endl;
     file.close();
+    return data;
+}
 
+void calcAvr(std::map<std::string, std::vector<std::string>> &data) {
     // find min max and average temperature for each station and print it
-    for (const auto &station : data) {
+    for (const auto &station: data) {
         std::string stationName = station.first;
         std::vector<std::string> stationData = station.second;
         float minTemp = std::stof(stationData.at(1));
@@ -50,7 +54,13 @@ int main() {
         std::cout << "Station: " << stationName << " Min: " << minTemp << " Max: " << maxTemp << " Avg: " << avgTemp
                   << std::endl;
     }
+}
 
+int main() {
+
+    // read the file
+    std::map<std::string, std::vector<std::string>> data = readFile();
+    calcAvr(data);
 
 
     return 0;
