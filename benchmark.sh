@@ -1,15 +1,18 @@
 #!/bin/bash
 export TIMEFORMAT='%2R'
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+
 # Navigate to the project directory
-cd /home/bognar/projects/1brc_cpp/cmake-build-debug
+cd ./cmake-build-debug
 
-# Run the perf command
-/usr/lib/linux-tools/5.15.0-100-generic/perf record --freq=997 --call-graph dwarf -q -o /mnt/c/Users/Niklas/AppData/Local/Temp/clion1203125129335040069perf /home/bognar/projects/1brc_cpp/cmake-build-debug/1brc_cpp
+TIMES=""
 
-    TIMES=""
-    for n in {1..5}; do
-        TIMES+="$({ time /home/bognar/projects/1brc_cpp/cmake-build-debug/1brc_cpp > /dev/null; } 2>&1 ) "
-        sleep 1
-    done
+echo "Running 1_brc_cpp_${BRANCH_NAME}"
+for n in {1..5}; do
+    TIMES+="$({ time ./1brc_cpp > /dev/null; } 2>&1 ) "
+    echo "1_brc_cpp_${BRANCH_NAME} run $n of 5"
+    sleep 1
+done
 
-echo -e $TIMES | awk "BEGIN { RS = \" \"; sum = 0.0; } {  sum += \$1; } END { printf \"1_brc runtime=[ %s] average=%.2fs\t\n\", \"$TIMES\", sum/5.0 }"
+echo -e $TIMES | awk "BEGIN { RS = \" \"; sum = 0.0; } {  sum += \$1; } END { printf \"1_brc runtime=[ %s] average=%.2fs\t\n\", \"$TIMES\", sum/5.0 }" | tee "../perf/1_brc_perf_${BRANCH_NAME}.txt"
