@@ -1,0 +1,13 @@
+2024-03-19T10:26:35+00:00
+Running /home/bognar/projects/1brc_cpp/cmake-build-debug/1brc_cpp
+Run on (8 X 2295.62 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x4)
+  L1 Instruction 64 KiB (x4)
+  L2 Unified 512 KiB (x4)
+  L3 Unified 4096 KiB (x1)
+Load Average: 0.10, 0.05, 0.05
+-----------------------------------------------------
+Benchmark           Time             CPU   Iterations
+-----------------------------------------------------
+run        2728033382 ns   2566731900 ns            1
