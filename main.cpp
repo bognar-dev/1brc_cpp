@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <sstream>
+#include <benchmark/benchmark.h>
 
 
 std::map<std::string, std::vector<std::string>> readFile() {
@@ -56,12 +57,14 @@ void calcAvr(std::map<std::string, std::vector<std::string>> &data) {
     }
 }
 
-int main() {
-
-    // read the file
-    std::map<std::string, std::vector<std::string>> data = readFile();
-    calcAvr(data);
-
-
-    return 0;
+static void run(benchmark::State& state) {
+    for (auto _ : state) {
+        // read the file
+        std::map<std::string, std::vector<std::string>> data = readFile();
+        calcAvr(data);
+    }
 }
+
+BENCHMARK(run);
+
+BENCHMARK_MAIN();
