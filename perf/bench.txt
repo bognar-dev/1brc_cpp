@@ -1,13 +1,14 @@
-2024-03-19T10:26:35+00:00
-Running /home/bognar/projects/1brc_cpp/cmake-build-debug/1brc_cpp
+2024-03-20T11:50:33+00:00
+Running /home/bognar/projects/1brc_cpp/cmake-build-debug/1_BRC_Benchmark
 Run on (8 X 2295.62 MHz CPU s)
 CPU Caches:
   L1 Data 32 KiB (x4)
   L1 Instruction 64 KiB (x4)
   L2 Unified 512 KiB (x4)
   L3 Unified 4096 KiB (x1)
-Load Average: 0.10, 0.05, 0.05
------------------------------------------------------
-Benchmark           Time             CPU   Iterations
------------------------------------------------------
-run        2728033382 ns   2566731900 ns            1
+Load Average: 0.22, 0.38, 0.44
+--------------------------------------------------------------------
+Benchmark                          Time             CPU   Iterations
+--------------------------------------------------------------------
+One_BRC/readFile          1.5273e+11 ns   1.5268e+11 ns            1
+One_BRC/calculateAverages        178 ns          178 ns      4046608

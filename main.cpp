@@ -1,70 +1,21 @@
+#include <chrono>
 #include <iostream>
-#include <fstream>
-#include <map>
-#include <vector>
-#include <sstream>
-#include <benchmark/benchmark.h>
+#include "calculations.h"
 
 
-std::map<std::string, std::vector<std::string>> readFile() {
-    //read the csv file from data folder
-    std::ifstream file("../data/measurements.txt");
-    //check for errors
-    if (!file.is_open()) {
-        std::cerr << "Error: file not found" << std::endl;
-        return {};
-    }
-    std::cout << "File opened successfully" << std::endl;
-    //read the file line by line
-    std::string line;
+int main() {
+    auto start = std::chrono::high_resolution_clock::now();
+    auto data = readFile();
+    auto afterRead = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsedRead = afterRead - start;
+    calcAvr(data);
+    auto afterCalc = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsedCalc = afterCalc - afterRead;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    std::cout << "Reading time: " << elapsedRead.count() << "s" << std::endl;
+    std::cout << "Calculation time: " << elapsedCalc.count() << "s" << std::endl;
+    std::cout << "Execution time: " << elapsed.count() << "s" << std::endl;
 
-    std::map<std::string, std::vector<std::string>> data;
-
-    while (std::getline(file, line)) {
-        std::string station;
-        std::string temperature;
-        std::stringstream ss(line);
-        std::getline(ss, station, ';');
-        std::getline(ss, temperature, ';');
-        data[station].push_back(temperature);
-    }
-    std::cout << "Data read successfully" << std::endl;
-    file.close();
-    return data;
+    return 0;
 }
-
-void calcAvr(std::map<std::string, std::vector<std::string>> &data) {
-    // find min max and average temperature for each station and print it
-    for (const auto &station: data) {
-        std::string stationName = station.first;
-        std::vector<std::string> stationData = station.second;
-        float minTemp = std::stof(stationData.at(1));
-        float maxTemp = std::stof(stationData.at(1));
-        float avgTemp = 0;
-        for (int i = 1; i < stationData.size(); i++) {
-            float temp = std::stof(stationData[i]);
-            if (temp < minTemp) {
-                minTemp = temp;
-            }
-            if (temp > maxTemp) {
-                maxTemp = temp;
-            }
-            avgTemp += temp;
-        }
-        avgTemp /= stationData.size() - 1;
-        std::cout << "Station: " << stationName << " Min: " << minTemp << " Max: " << maxTemp << " Avg: " << avgTemp
-                  << std::endl;
-    }
-}
-
-static void run(benchmark::State& state) {
-    for (auto _ : state) {
-        // read the file
-        std::map<std::string, std::vector<std::string>> data = readFile();
-        calcAvr(data);
-    }
-}
-
-BENCHMARK(run);
-
-BENCHMARK_MAIN();

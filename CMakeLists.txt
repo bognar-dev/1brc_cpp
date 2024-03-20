@@ -15,5 +15,10 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
 
 find_package(benchmark REQUIRED)
-add_executable(1brc_cpp main.cpp)
-target_link_libraries(1brc_cpp benchmark::benchmark)
+add_executable(1brc_cpp main.cpp
+        calculations.cpp
+        calculations.h)
+add_executable(1_BRC_Benchmark benchmark.cpp
+        calculations.cpp
+        calculations.h)
+target_link_libraries(1_BRC_Benchmark benchmark::benchmark)
