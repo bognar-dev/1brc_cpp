@@ -66,9 +66,6 @@ void calcAvr(std::map<std::string, std::vector<float>> data) {
     for (const auto &station: data) {
         std::string stationName = station.first;
         std::vector<float> stationData = station.second;
-        if(stationName == "Ustka"){
-            std::cout << "Ustka appears " << stationData.size() << " times." << std::endl;
-        }
         float minTemp = *std::min_element(stationData.begin(), stationData.end());
         float maxTemp = *std::max_element(stationData.begin(), stationData.end());
         float avgTemp = std::accumulate(stationData.begin(), stationData.end(), 0.0) / stationData.size();
