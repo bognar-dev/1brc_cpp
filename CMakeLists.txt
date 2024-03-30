@@ -17,8 +17,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
 find_package(benchmark REQUIRED)
 add_executable(1brc_cpp main.cpp
         calculations.cpp
-        calculations.h)
+        calculations.h
+        channel.h
+        )
 add_executable(1_BRC_Benchmark benchmark.cpp
         calculations.cpp
-        calculations.h)
+        calculations.h
+        channel.h)
 target_link_libraries(1_BRC_Benchmark benchmark::benchmark)

@@ -1,75 +1,76 @@
-//
-// Created by Niklas on 20/03/2024.
-//
-
-
-
 #include <iostream>
 #include <fstream>
 #include <map>
+#include <utility>
 #include <vector>
 #include <sstream>
-#include <limits>
 #include <thread>
 #include <mutex>
 #include <algorithm>
 #include <numeric>
 #include <iterator>
+#include <cmath>
+#include "channel.h"
 
+struct CityTemperatureInfo {
+    int count;
+    float min;
+    float max;
+    float sum;
+};
 
-std::mutex mtx;
+std::map<std::string, CityTemperatureInfo> mapOfTemp;
 
-void processChunk(int start, int end, std::map<std::string, std::vector<float>>& data) {
-    std::ifstream file("../data/measurements.txt");
-    std::string line;
-    file.seekg(std::ios::beg);
-
-    for(int i = start; i < end; ++i) {
-        if(std::getline(file, line)) {
-            std::string station;
-            std::string temperature;
-            std::stringstream ss(line);
-            std::getline(ss, station, ';');
-            std::getline(ss, temperature, ';');
-            mtx.lock();
-            data[station].push_back(std::stof(temperature));
-            mtx.unlock();
+void processChunk(Channel<std::string> &channel) {
+    for (auto line = channel.recv(); line.has_value(); line = channel.recv()) {
+        std::string city;
+        float temp;
+        std::stringstream ss(*line);
+        std::getline(ss, city, ';');
+        ss >> temp;
+        if (mapOfTemp.find(city) != mapOfTemp.end()) {
+            mapOfTemp[city].count++;
+            mapOfTemp[city].sum += temp;
+            if (temp < mapOfTemp[city].min) {
+                mapOfTemp[city].min = temp;
+            }
+            if (temp > mapOfTemp[city].max) {
+                mapOfTemp[city].max = temp;
+            }
+        } else {
+            mapOfTemp[city] = {1, temp, temp, temp};
         }
     }
-    file.close();
-    std::cout << "Thread " << std::this_thread::get_id() << " finished processing chunk." << std::endl;
 }
 
 
-
-std::map<std::string, std::vector<float>> readFile() {
-    std::map<std::string, std::vector<float>> data;
-    std::ifstream file("../data/measurements.txt");
-    int lines = 1000000000;
-    file.seekg(0, std::ios::beg);
-    unsigned int numThreads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads(numThreads);
-    int chunkSize = lines / numThreads;
-    for(int i = 0; i < numThreads; ++i) {
-        int start = i * chunkSize;
-        int end = (i == numThreads - 1) ? lines : start + chunkSize;
-        threads[i] = std::thread(processChunk, start, end, std::ref(data));
+void readFile(std::string filepath) {
+    std::ifstream file(filepath);
+    if (file.fail()) {
+        std::cerr << "Failed to open file: " << filepath << std::endl;
+        return;
     }
-    for(auto& thread : threads) {
-        thread.join();
+    std::string line;
+    auto [sender, receiver] = make_channel<std::string>();
+    std::thread worker(processChunk, std::ref(receiver));
+    while (std::getline(file, line)) {
+        if (!line.empty()) {
+            sender.send(line);
+        }
     }
-    return data;
+    sender.close();
+    worker.join();
 }
 
-void calcAvr(std::map<std::string, std::vector<float>> data) {
-    std::cout<<"Data size: "<<data.size()<<std::endl;
-    for (const auto &station: data) {
-        std::string stationName = station.first;
-        std::vector<float> stationData = station.second;
-        float minTemp = *std::min_element(stationData.begin(), stationData.end());
-        float maxTemp = *std::max_element(stationData.begin(), stationData.end());
-        float avgTemp = std::accumulate(stationData.begin(), stationData.end(), 0.0) / stationData.size();
-        std::cout << "Station: " << stationName << " Min: " << minTemp << " Max: " << maxTemp << " Avg: " << avgTemp
-                  << std::endl;
+float round(float x) {
+    return std::round(x * 10) / 10;
+}
+
+void evaluate(std::string input) {
+    readFile(std::move(input));
+    for (const auto &item: mapOfTemp) {
+        std::cout << item.first << "=" << round(item.second.min) << "/"
+                  << round(item.second.sum / item.second.count)
+                  << "/" << round(item.second.max) << ", ";
     }
 }

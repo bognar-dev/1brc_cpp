@@ -21,7 +21,8 @@ BENCHMARK_DEFINE_F(One_BRC, readFile)(benchmark::State &st) {
 
     }
 
-    data = readFile();
+    std::string input = "../data/measurements.txt";
+    evaluate(input);
     benchmark::DoNotOptimize(data);
 }
 
@@ -30,7 +31,7 @@ BENCHMARK_DEFINE_F(One_BRC, calculateAverages)(benchmark::State &st) {
     for (auto _: st) {
 
     }
-    calcAvr(data);
+    //calcAvr(data);
 }
 
 BENCHMARK_REGISTER_F(One_BRC, readFile);

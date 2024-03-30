@@ -8,6 +8,6 @@
 #include <vector>
 #include <map>
 
-void processChunk(int start, int end, std::map<std::string, std::vector<float>>& data);
+void evaluate(std::string filepath);
 void calcAvr(std::map<std::string, std::vector<float>> data);
 std::map<std::string, std::vector<float>> readFile();
