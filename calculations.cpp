@@ -12,6 +12,9 @@
 #include <limits>
 #include <thread>
 #include <mutex>
+#include <algorithm>
+#include <numeric>
+#include <iterator>
 
 
 std::mutex mtx;
@@ -20,9 +23,7 @@ void processChunk(int start, int end, std::map<std::string, std::vector<float>>&
     std::ifstream file("../data/measurements.txt");
     std::string line;
     file.seekg(std::ios::beg);
-    for(int i = 0; i < start; ++i) {
-        file.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-    }
+
     for(int i = start; i < end; ++i) {
         if(std::getline(file, line)) {
             std::string station;
@@ -35,14 +36,16 @@ void processChunk(int start, int end, std::map<std::string, std::vector<float>>&
             mtx.unlock();
         }
     }
+    file.close();
+    std::cout << "Thread " << std::this_thread::get_id() << " finished processing chunk." << std::endl;
 }
+
+
 
 std::map<std::string, std::vector<float>> readFile() {
     std::map<std::string, std::vector<float>> data;
     std::ifstream file("../data/measurements.txt");
-    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    int lines = file.gcount();
-    file.clear();
+    int lines = 1000000000;
     file.seekg(0, std::ios::beg);
     unsigned int numThreads = std::thread::hardware_concurrency();
     std::vector<std::thread> threads(numThreads);
@@ -59,22 +62,16 @@ std::map<std::string, std::vector<float>> readFile() {
 }
 
 void calcAvr(std::map<std::string, std::vector<float>> data) {
+    std::cout<<"Data size: "<<data.size()<<std::endl;
     for (const auto &station: data) {
         std::string stationName = station.first;
         std::vector<float> stationData = station.second;
-        float minTemp = stationData[0];
-        float maxTemp = stationData[0];
-        float avgTemp = 0;
-        for (int i = 0; i < stationData.size(); i++) {
-            if (stationData[i] < minTemp) {
-                minTemp = stationData[i];
-            }
-            if (stationData[i] > maxTemp) {
-                maxTemp = stationData[i];
-            }
-            avgTemp += stationData[i];
+        if(stationName == "Ustka"){
+            std::cout << "Ustka appears " << stationData.size() << " times." << std::endl;
         }
-        avgTemp /= stationData.size() - 1;
+        float minTemp = *std::min_element(stationData.begin(), stationData.end());
+        float maxTemp = *std::max_element(stationData.begin(), stationData.end());
+        float avgTemp = std::accumulate(stationData.begin(), stationData.end(), 0.0) / stationData.size();
         std::cout << "Station: " << stationName << " Min: " << minTemp << " Max: " << maxTemp << " Avg: " << avgTemp
                   << std::endl;
     }

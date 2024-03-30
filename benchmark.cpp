@@ -4,7 +4,7 @@
 #include "calculations.h"
 
 
-std::map<std::string, std::vector<float>> _data;
+std::map<std::string, std::vector<float>> data;
 class One_BRC : public benchmark::Fixture {
 protected:
 
@@ -18,16 +18,19 @@ public:
 
 BENCHMARK_DEFINE_F(One_BRC, readFile)(benchmark::State &st) {
     for (auto _: st) {
-        _data = readFile();
-        benchmark::DoNotOptimize(_data);
+
     }
+
+    data = readFile();
+    benchmark::DoNotOptimize(data);
 }
 
 
 BENCHMARK_DEFINE_F(One_BRC, calculateAverages)(benchmark::State &st) {
     for (auto _: st) {
-        calcAvr(_data);
+
     }
+    calcAvr(data);
 }
 
 BENCHMARK_REGISTER_F(One_BRC, readFile);
