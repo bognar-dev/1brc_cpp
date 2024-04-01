@@ -19,6 +19,7 @@ struct CityTemperatureInfo {
     float sum;
 };
 
+
 std::map<std::string, CityTemperatureInfo> mapOfTemp;
 
 void processChunk(Channel<std::string> &channel) {
