@@ -55,7 +55,6 @@ void processChunk(Channel<std::string> &channel) {
             info.max = std::stof(std::string(tokens[1]));
             info.sum = std::stof(std::string(tokens[1]));
             mapOfTemp[std::string(tokens[0])] = info;
-            delete &info;
         } else {
             it->second.count++;
             it->second.min = std::min(it->second.min, std::stof(std::string(tokens[1])));
