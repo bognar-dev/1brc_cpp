@@ -5,4 +5,9 @@
       <configuration sdkName="Python 3.9" />
     </facet>
   </component>
+  <component name="Go" enabled="true">
+    <buildTags>
+      <option name="os" value="linux" />
+    </buildTags>
+  </component>
 </module>
