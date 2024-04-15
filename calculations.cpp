@@ -17,7 +17,7 @@ struct CityTemperatureInfo {
     float min;
     float max;
     float sum;
-    CityTemperatureInfo() : count(0), min(0), max(0), sum(0) {}
+    CityTemperatureInfo() : count(0), min(100), max(0), sum(0) {}
 };
 
 void tokenize
@@ -73,12 +73,18 @@ void read(Channel<std::string> &sender,std::string filepath) {
     std::string line;
     // Determine the total number of lines in the file
     size_t totalLines = 1000000000;
+    size_t halfLines = totalLines / 10;
+    size_t lineCount = 0;
     while (std::getline(file, line)) {
         if (!line.empty()) {
             sender.send(line);
         }
+        if(++lineCount == halfLines){
+            sender.close();
+            return;
+        }
     }
-    sender.close();
+
 
 }
 
