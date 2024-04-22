@@ -8,6 +8,6 @@
 #include <vector>
 #include <map>
 
-void evaluate(std::string filepath);
+void evaluate(const std::string& filepath);
 void calcAvr(std::map<std::string, std::vector<float>> data);
 std::map<std::string, std::vector<float>> readFile();

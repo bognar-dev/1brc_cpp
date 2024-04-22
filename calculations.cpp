@@ -1,110 +1,147 @@
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <utility>
-#include <vector>
-#include <sstream>
-#include <thread>
-#include <mutex>
-#include <algorithm>
-#include <numeric>
-#include <iterator>
-#include <cmath>
-#include "channel.h"
+#include <linux/mman.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <sys/mman.h>
+#include <string>
 
-struct CityTemperatureInfo {
+#define HCAP (4096)
+#define BUFSIZE ((1 << 20) * 64)
+
+struct result {
+    char city[100];
     int count;
-    float min;
-    float max;
-    float sum;
-    CityTemperatureInfo() : count(0), min(100), max(0), sum(0) {}
+    double sum, min, max;
 };
 
-void tokenize
-        (std::vector<std::string_view> &result, const std::string_view &s) {
-    result.clear();
-
-    std::string_view::size_type from = 0;
-    std::string_view::size_type colon = s.find(';');
-
-    while (colon != std::string_view::npos) {
-        result.push_back(s.substr(from, colon - from));
-        from = colon + 1;
-        colon = s.find(';', from);
+static const char *parse_double(double *dest, const char *s) {
+    // parse sign
+    double mod;
+    if (*s == '-') {
+        mod = -1.0;
+        s++;
+    } else {
+        mod = 1.0;
     }
 
-    result.push_back(s.substr(from));
+    if (s[1] == '.') {
+        *dest = (((double)s[0] + (double)s[2] / 10.0) - 1.1 * '0') * mod;
+        return s + 4;
+    }
+
+    *dest =
+            ((double)((s[0]) * 10 + s[1]) + (double)s[3] / 10.0 - 11.1 * '0') * mod;
+    return s + 5;
 }
 
-std::unordered_map<std::string, CityTemperatureInfo> mapOfTemp;
+// hash returns a simple (but fast) hash for the first n bytes of data
+static unsigned int hash(const unsigned char *data, int n) {
+    unsigned int hash = 0;
 
-void processChunk(Channel<std::string> &channel) {
-    for (;;) {
-        auto line = channel.recv();
-        if (!line){
-            channel.close();
-            return;
-        };
-        std::vector<std::string_view> tokens;
-        tokenize(tokens, *line);
-        auto it = mapOfTemp.find(std::string(tokens[0]));
-        if (it == mapOfTemp.end()) {
-            CityTemperatureInfo info;
-            info.count = 1;
-            info.min = std::stof(std::string(tokens[1]));
-            info.max = std::stof(std::string(tokens[1]));
-            info.sum = std::stof(std::string(tokens[1]));
-            mapOfTemp[std::string(tokens[0])] = info;
-        } else {
-            it->second.count++;
-            it->second.min = std::min(it->second.min, std::stof(std::string(tokens[1])));
-            it->second.max = std::max(it->second.max, std::stof(std::string(tokens[1])));
-            it->second.sum += std::stof(std::string(tokens[1]));
+    for (int i = 0; i < n; i++) {
+        hash = (hash * 31) + data[i];
+    }
+
+    return hash;
+}
+
+static int cmp(const void *ptr_a, const void *ptr_b) {
+    return strcmp(((struct result *)ptr_a)->city, ((struct result *)ptr_b)->city);
+}
+
+void print_results(struct result results[], int nresults) {
+    char buf[1024 * 16];
+    char *b = buf;
+    for (int i = 0; i < nresults; i++) {
+        b += sprintf(b, "%s=%.1f/%.1f/%.1f%s", results[i].city, results[i].min,
+                     results[i].sum / results[i].count, results[i].max,
+                     i < nresults - 1 ? ", " : "");
+    }
+    *b = 0x0;
+    puts(buf);
+}
+
+void evaluate(const std::string& filepath) {
+    const char *file = "../data/measurements.txt";
+
+    FILE *fh = fopen(file, "r");
+    if (!fh) {
+        perror("error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    struct result results[450];
+    int nresults = 0;
+    const char *buf = static_cast<const char *>(mmap(NULL, BUFSIZE, PROT_READ | PROT_WRITE,
+                                                     MAP_PRIVATE | MAP_HUGETLB | MAP_ANONYMOUS, -1, 0));
+
+    if (buf == NULL || buf == MAP_FAILED) {
+        perror("mmap");
+        exit(EXIT_FAILURE);
+    }
+    int map[HCAP];
+    memset(map, -1, HCAP * sizeof(int));
+
+    const char *linestart;
+    const char *pos;
+    double measurement;
+    unsigned int h;
+    int c;
+    int keylen;
+
+    while (true) {
+        size_t nread = fread((void *) buf, 1, BUFSIZE, fh);
+        if (nread <= 0) {
+            break;
+        }
+
+        const char *s = buf;
+        long rewind = 0;
+        while (buf[nread - 1] != '\n') {
+            rewind--;
+            nread--;
+        }
+        fseek(fh, rewind, SEEK_CUR);
+
+        while (s < &buf[nread]) {
+            linestart = s;
+            pos = strchr(s, ';');
+            keylen = (int)(pos - linestart);
+            s = parse_double(&measurement, pos + 1);
+
+            // find index of group by key through hash with linear probing
+            h = hash((unsigned char *)linestart, keylen) & (HCAP - 1);
+            c = map[h];
+            while (c != -1 &&
+                   memcmp(results[c].city, linestart, (size_t)keylen) != 0) {
+                h = (h + 1) & (HCAP - 1);
+                c = map[h];
+            }
+
+            if (c < 0) {
+                memcpy(results[nresults].city, linestart, (size_t)keylen);
+                results[nresults].city[keylen] = '\0';
+                results[nresults].sum = measurement;
+                results[nresults].max = measurement;
+                results[nresults].min = measurement;
+                results[nresults].count = 1;
+                map[h] = nresults;
+                nresults++;
+            } else {
+                results[c].sum += measurement;
+                results[c].count += 1;
+                if (results[c].min > measurement) {
+                    results[c].min = measurement;
+                } else if (results[c].max < measurement) {
+                    results[c].max = measurement;
+                }
+            }
         }
     }
-}
 
-void read(Channel<std::string> &sender,std::string filepath) {
-    std::ifstream file(filepath);
-    if (file.fail()) {
-        std::cerr << "Failed to open file: " << filepath << std::endl;
-        return;
-    }
-    std::string line;
-    // Determine the total number of lines in the file
-    size_t totalLines = 1000000000;
-    size_t halfLines = totalLines / 10;
-    size_t lineCount = 0;
-    while (std::getline(file, line)) {
-        if (!line.empty()) {
-            sender.send(line);
-        }
-        if(++lineCount == halfLines){
-            sender.close();
-            return;
-        }
-    }
+    qsort(results, (size_t)nresults, sizeof(*results), cmp);
 
-
-}
-
-void readFile(std::string filepath) {
-
-    auto [sender, receiver] = make_channel<std::string>();
-    std::thread worker(read, std::ref(sender), std::move(filepath));
-    processChunk(receiver);
-    worker.join();
-}
-
-float round(float x) {
-    return std::round(x * 10) / 10;
-}
-
-void evaluate(std::string input) {
-    readFile(std::move(input));
-    for (const auto &item: mapOfTemp) {
-        std::cout << item.first << "=" << round(item.second.min) << "/"
-                  << round(item.second.sum / item.second.count)
-                  << "/" << round(item.second.max) << "\n";
-    }
+    print_results(results, nresults);
+    // free(buf);
+    fclose(fh);
 }
