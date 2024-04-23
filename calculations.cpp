@@ -1,8 +1,9 @@
 #include <linux/mman.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sys/mman.h>
+#include <string>
 
 #define HCAP (4096)
 #define BUFSIZE ((1 << 20) * 64)
@@ -60,11 +61,8 @@ void print_results(struct result results[], int nresults) {
     puts(buf);
 }
 
-int main(int argc, const char **argv) {
-    const char *file = "/app/data/measurements.txt";
-    if (argc > 1) {
-        file = argv[1];
-    }
+void evaluate(const std::string& filepath) {
+    const char *file = "../data/measurements.txt";
 
     FILE *fh = fopen(file, "r");
     if (!fh) {
@@ -74,11 +72,12 @@ int main(int argc, const char **argv) {
 
     struct result results[450];
     int nresults = 0;
-    char *buf = static_cast<char *>(mmap(nullptr, BUFSIZE, PROT_READ | PROT_WRITE,
-                                         MAP_PRIVATE | MAP_HUGETLB | MAP_ANONYMOUS, -1, 0));
-    if (buf == nullptr || buf == MAP_FAILED) {
+    const char *buf = static_cast<const char *>(mmap(NULL, BUFSIZE, PROT_READ | PROT_WRITE,
+                                                     MAP_PRIVATE | MAP_HUGETLB | MAP_ANONYMOUS, -1, 0));
+
+    if (buf == NULL || buf == MAP_FAILED) {
         perror("mmap");
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
     int map[HCAP];
     memset(map, -1, HCAP * sizeof(int));
@@ -90,8 +89,8 @@ int main(int argc, const char **argv) {
     int c;
     int keylen;
 
-    while (1) {
-        size_t nread = fread(buf, 1, BUFSIZE, fh);
+    while (true) {
+        size_t nread = fread((void *) buf, 1, BUFSIZE, fh);
         if (nread <= 0) {
             break;
         }
