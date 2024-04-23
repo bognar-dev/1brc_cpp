@@ -61,7 +61,7 @@ void print_results(struct result results[], int nresults) {
 }
 
 int main(int argc, const char **argv) {
-    const char *file = "../data/measurements.txt";
+    const char *file = "/app/data/measurements.txt";
     if (argc > 1) {
         file = argv[1];
     }
