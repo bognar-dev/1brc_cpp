@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
+import argparse
 # Based on https://github.com/gunnarmorling/1brc/blob/main/src/main/java/dev/morling/onebrc/CreateMeasurements.java
 
 import os
@@ -42,7 +42,7 @@ def build_weather_station_name_list():
     Grabs the weather station names from example data provided in repo and dedups
     """
     station_names = []
-    with open('./data/weather_stations.csv', 'r',encoding='UTF-8') as file:
+    with open('/project/weather_stations.csv', 'r',encoding='UTF-8') as file:
         file_contents = file.read()
     for station in file_contents.splitlines():
         if "#" in station:
@@ -98,7 +98,7 @@ def estimate_file_size(weather_station_names, num_rows_to_create):
     return f"Estimated max file size is:  {human_file_size}."
 
 
-def build_test_data(weather_station_names, num_rows_to_create):
+def build_test_data(weather_station_names, num_rows_to_create, name):
     """
     Generates and writes to file the requested length of test data
     """
@@ -106,19 +106,26 @@ def build_test_data(weather_station_names, num_rows_to_create):
     coldest_temp = -99.9
     hottest_temp = 99.9
     station_names_10k_max = random.choices(weather_station_names, k=10_000)
-    batch_size = 10000 # instead of writing line by line to file, process a batch of stations and put it to disk
+    batch_size = 10000  # instead of writing line by line to file, process a batch of stations and put it to disk
+    if num_rows_to_create < batch_size:
+        batch_size = num_rows_to_create
     chunks = num_rows_to_create // batch_size
     print('Building test data...')
-
+    if name:
+        filename = f"/project/data/{name}.txt"
+    else:
+        filename = f"/project/data/measurements.txt"
     try:
-        with open("./data/measurements.txt", 'w',encoding='UTF-8') as file:
+        with open(filename, 'w', encoding='UTF-8') as file:
             progress = 0
             for chunk in range(chunks):
-                
+
                 batch = random.choices(station_names_10k_max, k=batch_size)
-                prepped_deviated_batch = '\n'.join([f"{station};{random.uniform(coldest_temp, hottest_temp):.1f}" for station in batch]) # :.1f should quicker than round on a large scale, because round utilizes mathematical operation
+                prepped_deviated_batch = '\n'.join(
+                    [f"{station};{random.uniform(coldest_temp, hottest_temp):.1f}" for station in
+                     batch])  # :.1f should quicker than round on a large scale, because round utilizes mathematical operation
                 file.write(prepped_deviated_batch + '\n')
-                
+
                 # Update progress bar every 1%
                 if (chunk + 1) * 100 // chunks != progress:
                     progress = (chunk + 1) * 100 // chunks
@@ -130,13 +137,13 @@ def build_test_data(weather_station_names, num_rows_to_create):
         print("Something went wrong. Printing error info and exiting...")
         print(e)
         exit()
-    
+
     end_time = time.time()
     elapsed_time = end_time - start_time
-    file_size = os.path.getsize("./data/measurements.txt")
+    file_size = os.path.getsize(filename)
     human_file_size = convert_bytes(file_size)
- 
-    print("Test data successfully written to 1brc/data/measurements.txt")
+
+    print(f"Test data successfully written to {filename}")
     print(f"Actual file size:  {human_file_size}")
     print(f"Elapsed time: {format_elapsed_time(elapsed_time)}")
 
@@ -145,12 +152,19 @@ def main():
     """
     main program function
     """
-    check_args(sys.argv)
-    num_rows_to_create = int(sys.argv[1])
+    parser = argparse.ArgumentParser(description='Create measurements.')
+    parser.add_argument('--rows', type=str, help='Number of records to create')
+    parser.add_argument('--name', type=str, help='Name for the measurement')
+
+    args = parser.parse_args()
+
+    num_rows_to_create = int(args.rows)
+    name = args.name
+
     weather_station_names = []
     weather_station_names = build_weather_station_name_list()
     print(estimate_file_size(weather_station_names, num_rows_to_create))
-    build_test_data(weather_station_names, num_rows_to_create)
+    build_test_data(weather_station_names, num_rows_to_create, name)
     print("Test data build complete.")
 
 

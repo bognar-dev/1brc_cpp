@@ -8,6 +8,19 @@
 #include <vector>
 #include <map>
 
-void evaluate(const std::string& filepath);
-void calcAvr(std::map<std::string, std::vector<float>> data);
-std::map<std::string, std::vector<float>> readFile();
+
+#define HCAP (4096)
+#define BUFSIZE ((1 << 20) * 1)
+
+static const char *parse_double(double *dest, const char *s);
+static unsigned int hash(const unsigned char *data, int n);
+static int cmp(const void *ptr_a, const void *ptr_b);
+void print_results(struct result results[], int nresults);
+void evaluate(const char *file);
+
+
+struct result {
+    char city[100];
+    int count;
+    double sum, min, max;
+};

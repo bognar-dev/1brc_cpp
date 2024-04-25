@@ -3,16 +3,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <sys/mman.h>
-#include <string>
+#include "calculations.h"
 
-#define HCAP (4096)
-#define BUFSIZE ((1 << 20) * 64)
 
-struct result {
-    char city[100];
-    int count;
-    double sum, min, max;
-};
+
 
 static const char *parse_double(double *dest, const char *s) {
     // parse sign
@@ -61,8 +55,7 @@ void print_results(struct result results[], int nresults) {
     puts(buf);
 }
 
-void evaluate(const std::string& filepath) {
-    const char *file = "../data/measurements.txt";
+void evaluate(const char *file) {
 
     FILE *fh = fopen(file, "r");
     if (!fh) {

@@ -1,10 +1,8 @@
 
 #include <benchmark/benchmark.h>
-#include <chrono>
 #include "calculations.h"
 
 
-std::map<std::string, std::vector<float>> data;
 class One_BRC : public benchmark::Fixture {
 protected:
 
@@ -16,24 +14,14 @@ public:
     }
 };
 
-BENCHMARK_DEFINE_F(One_BRC, readFile)(benchmark::State &st) {
+BENCHMARK_DEFINE_F(One_BRC,evaluate )(benchmark::State &st) {
     for (auto _: st) {
 
     }
 
-    std::string input = "../data/measurements.txt";
-    evaluate(input);
-    benchmark::DoNotOptimize(data);
+    const char *file = "/app/data/measurements.txt";
+    evaluate(file);
 }
 
-
-BENCHMARK_DEFINE_F(One_BRC, calculateAverages)(benchmark::State &st) {
-    for (auto _: st) {
-
-    }
-    //calcAvr(data);
-}
-
-BENCHMARK_REGISTER_F(One_BRC, readFile);
-BENCHMARK_REGISTER_F(One_BRC, calculateAverages);
+BENCHMARK_REGISTER_F(One_BRC, evaluate);
 BENCHMARK_MAIN();
