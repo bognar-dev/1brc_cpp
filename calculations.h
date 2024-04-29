@@ -10,7 +10,7 @@
 
 
 #define HCAP (4096)
-#define BUFSIZE ((1 << 20) * 1)
+#define BUFSIZE ((1 << 20) * 32)
 
 static const char *parse_double(double *dest, const char *s);
 static unsigned int hash(const unsigned char *data, int n);

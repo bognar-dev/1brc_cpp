@@ -1,8 +1,7 @@
-#include <linux/mman.h>
+#include <sys/mman.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <sys/mman.h>
 #include "calculations.h"
 
 
@@ -65,9 +64,7 @@ void evaluate(const char *file) {
 
     struct result results[450];
     int nresults = 0;
-    const char *buf = static_cast<const char *>(mmap(NULL, BUFSIZE, PROT_READ | PROT_WRITE,
-                                                     MAP_PRIVATE | MAP_HUGETLB | MAP_ANONYMOUS, -1, 0));
-
+    char *buf = static_cast<char *>(malloc(BUFSIZE));
     if (buf == NULL || buf == MAP_FAILED) {
         perror("mmap");
         exit(EXIT_FAILURE);

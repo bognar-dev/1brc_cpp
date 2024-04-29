@@ -1,5 +1,5 @@
 FROM alpine:3.14
-LABEL authors="Niklas" name="benchmark"
+LABEL authors="Niklas" name="bognardev/benchmark"
 
 # Install Google Benchmark
 RUN apk upgrade && \

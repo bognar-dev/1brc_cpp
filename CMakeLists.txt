@@ -3,16 +3,14 @@ cmake_minimum_required(VERSION 3.20.6)
 project(1brc_cpp)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
 
-cmake_minimum_required(VERSION 3.20.6)
+# Set the flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -flto -Wall -Wextra -Wpedantic -Wformat=2 -Wconversion -Wundef -Winline -Wimplicit-fallthrough ")
+
+add_definitions(-DNTHREADS=${NTHREADS})
 
 project(1brc_cpp)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
 
 find_package(benchmark REQUIRED)
 add_executable(1brc_cpp main.cpp
