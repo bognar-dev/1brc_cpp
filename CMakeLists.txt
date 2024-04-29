@@ -1,25 +1,25 @@
-cmake_minimum_required(VERSION 3.20.6)
+cmake_minimum_required(VERSION 3.10)
 
-project(1brc_cpp)
-
-set(CMAKE_CXX_STANDARD 17)
-
-# Set the flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -flto -Wall -Wextra -Wpedantic -Wformat=2 -Wconversion -Wundef -Winline -Wimplicit-fallthrough ")
-
-add_definitions(-DNTHREADS=${NTHREADS})
-
-project(1brc_cpp)
+project(PerformanceAnalysis)
 
 
-find_package(benchmark REQUIRED)
-add_executable(1brc_cpp main.cpp
-        calculations.cpp
-        calculations.h
-        channel.h
-)
-add_executable(1_BRC_Benchmark benchmark.cpp
-        calculations.cpp
-        calculations.h
-        channel.h)
-target_link_libraries(1_BRC_Benchmark benchmark::benchmark)
+add_executable(create-sample create-sample.c
+        create-sample.c)
+add_executable(main main.c
+        main.c)
+
+
+set(CMAKE_C_STANDARD 11)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -mtune=native -flto -Wall -Wextra -Wpedantic -Wformat=2 -Wconversion -Wundef -Winline -Wimplicit-fallthrough")
+
+if(DEBUG)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS -fsanitize=address -fsanitize=undefined -g -fstack-protector-strong")
+endif()
+
+find_package(Threads REQUIRED)
+target_link_libraries(create-sample Threads::Threads)
+target_link_libraries(main Threads::Threads)
+
+
+
