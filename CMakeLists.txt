@@ -8,6 +8,11 @@ add_executable(create-sample create-sample.c
 add_executable(main main.c
         main.c)
 
+add_executable(v2 v2.c
+        v2.c)
+add_executable(v3 v3.c
+        v3.c)
+
 
 set(CMAKE_C_STANDARD 11)
 
