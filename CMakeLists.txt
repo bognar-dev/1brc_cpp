@@ -3,15 +3,18 @@ cmake_minimum_required(VERSION 3.10)
 project(1BRC)
 
 
-add_executable(create-sample create-sample.c
-        create-sample.c)
-add_executable(main main.c
-        main.c)
+add_executable(create-sample create-sample.c)
 
-add_executable(v2 v2.c
-        v2.c)
-add_executable(v3 v3.c
-        v3.c)
+
+add_executable(linear-search linear-search.c)
+
+add_executable(hashmap hashmap.c)
+
+add_executable(parse-double parse-double.c)
+
+add_executable(fread-chunks fread-chunks.c)
+
+add_executable(loop-unrolling loop-unrolling.c)
 
 
 set(CMAKE_C_STANDARD 11)
@@ -24,7 +27,12 @@ endif()
 
 find_package(Threads REQUIRED)
 target_link_libraries(create-sample m Threads::Threads)
-target_link_libraries(main m Threads::Threads)
+target_link_libraries(linear-search m Threads::Threads)
+target_link_libraries(hashmap m Threads::Threads)
+target_link_libraries(parse-double m Threads::Threads)
+target_link_libraries(fread-chunks m Threads::Threads)
+target_link_libraries(loop-unrolling m Threads::Threads)
+
 
 
 
