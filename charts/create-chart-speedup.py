@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     # Continue with your plotting code...
     # Load data from CSV into a DataFrame
-    df = pd.read_csv('charts/performance.csv')
+    df = pd.read_csv('performance.csv')
 
     # remove the Method 1,Method 2,Method 3,Method 4,Method 5,Method 6,Method 7
     df = df.drop(columns=['Version 1', 'Version 2', 'Version 3', 'Version 4', 'Version 5', 'Version 6', 'Version 7'])
@@ -31,6 +31,7 @@ if __name__ == '__main__':
     plt.xlabel('File Size (Lines)')
     plt.ylabel('Relative Speedup (%)')
     plt.xscale('log')
+    plt.yscale('log')
     plt.grid(True, which="both", ls="--")
 
     # Get x-ticks and convert them to human readable format
