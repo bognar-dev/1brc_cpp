@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(PerformanceAnalysis)
+project(1BRC)
 
 
 add_executable(create-sample create-sample.c
@@ -23,8 +23,8 @@ if(DEBUG)
 endif()
 
 find_package(Threads REQUIRED)
-target_link_libraries(create-sample Threads::Threads)
-target_link_libraries(main Threads::Threads)
+target_link_libraries(create-sample m Threads::Threads)
+target_link_libraries(main m Threads::Threads)
 
 
 
