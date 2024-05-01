@@ -1,38 +1,65 @@
 #!/bin/bash
 export TIMEFORMAT='%2R'
-BRANCH_NAME=v1
-TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 
-# Define an array of file lengths
-file_lengths="100_000 1_000_000 10_000_000 100_000_000"
 
+BRANCHNAMES=(
+    ""
+    "c-conversion"
+    "linear-search"
+    "hashmap"
+    "custom-parser"
+    "fread-chunks"
+    "unroll-parsing"
+    "parallelize"
+    "mmap"
+)
 
-mkdir -p /project/data
+DESCRIPTIONS=(
+    ""
+    "linear-search by city name (baseline)"
+    "hashmap with linear probing"
+    "custom temperature float parser instead of strod"
+    "fread with 64MB chunks instead of line-by-line"
+    "unroll parsing of city name and generating hash"
+    "parallelize across 16 threads"
+    "mmap entire file instead of fread in chunks"
+)
 
-for length in $file_lengths
-do
-   # Run the Python script with the current file length and a fixed name
-   python3 /project/create_measurements.py --rows "$length" --name "meassurements_$length"
+# Array of line counts
+line_counts=(1000 10000 100000 1000000 10000000 100000000 1000000000)
+
+# Create an array of filenames based on the line counts
+FILES=()
+for lines in "${line_counts[@]}"; do
+    FILES+=("file_${lines}_lines.txt")
 done
 
+# Create a CSV file to store the runtimes
+echo "File,Program,Description,Runtime1,Runtime2,Runtime3" > runtimes.csv
 
-# Create a CSV file and write the header
-mkdir -p /project/perf
-echo "File,Run,Time" > "/project/perf/1_brc_perf_${BRANCH_NAME}.csv"
+# Loop over all files in the FILES array
+for FILE in "${FILES[@]}"; do
+    if [ -f "$FILE" ]; then
+        for BRANCH in ${BRANCHNAMES}; do
+            git checkout "$BRANCH"
+            cmake .
+            cd cmake-build-debug || exit
 
-echo "Running 1_brc_cpp_${BRANCH_NAME}"
-# Loop over all text files in the data directory
-for FILE in /project/data/*.txt; do
-    echo "Running tests on $FILE"
+            # run each program 3 times, capturing time output
+            TIMES=()
+            for n in {1..3}; do
+                TIMES+=("$({ time ./main $FILE > /dev/null; } 2>&1 )")
+                sleep 1
+            done
 
-    # run the program once, capturing time output
-    TIME="$({ time ./1brc_cpp $FILE > /dev/null; } 2>&1 )"
-    echo "Time: $TIME"
-    # Write the filename, run number, and time to the CSV file
-    echo "$FILE,1,$TIME" >> "/project/perf/1_brc_perf_${BRANCH_NAME}.csv"
-    sleep 1
+            # Print the data to the console
+            printf "$FILE,$BRANCH,${DESCRIPTIONS[$BRANCH]},${TIMES[0]},${TIMES[1]},${TIMES[2]}\n"
+
+            # Write the data to the CSV file
+            echo "$FILE,$BRANCH,${DESCRIPTIONS[$BRANCH]},${TIMES[0]},${TIMES[1]},${TIMES[2]}" >> runtimes.csv
+        done
+    else
+        echo "File $FILE does not exist."
+    fi
 done
-
-# Calculate average time and append to the CSV file
-awk -F, '{sum[$1] += $3; count[$1]++} END {for (i in sum) print i, sum[i]/count[i]}' "/project/perf/1_brc_perf_${BRANCH_NAME}.csv" | awk 'BEGIN {OFS=","} {print $1, $2}' >> "/project/perf/1_brc_perf_${BRANCH_NAME}.csv"

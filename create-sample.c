@@ -450,7 +450,7 @@ int main(int argc, char **argv) {
 
     long n = strtol(argv[1], NULL, 10);
     char filename[50];
-    sprintf(filename, "measurement_%ld_lines.txt", n);
+    sprintf(filename, "data/measurement_%ld_lines.txt", n);
 
     FILE *fh = fopen(filename, "w");
     if (!fh) {
