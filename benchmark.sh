@@ -3,6 +3,7 @@ export TIMEFORMAT='%2R'
 
 
 PROGRAMS=(
+    "linear-search"
     "hashmap"
     "parse-double"
     "fread-chunks"
