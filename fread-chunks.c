@@ -13,7 +13,14 @@ struct City {
     double sum, min, max;
 };
 
-// hash returns a simple (but fast) hash for the first n bytes of data
+/**
+ * @description: hash - Returns a simple (but fast) hash for the first n bytes of data.
+ * @data: Pointer to the data to be hashed.
+ * @n: Number of bytes to hash.
+ * @param data
+ * @param n
+ * @return hash
+ */
 static unsigned int hash(const unsigned char *data, int n) {
     unsigned int hash = 0;
 
@@ -24,11 +31,25 @@ static unsigned int hash(const unsigned char *data, int n) {
     return hash;
 }
 
+
+/**
+ * @description compareStr - Compares two cities by their name.
+ * @param ptr_a
+ * @param ptr_b
+ * @return bool
+ */
 static int compareStr(const void *ptr_a, const void *ptr_b) {
     return strcmp(((struct City *) ptr_a)->city, ((struct City *) ptr_b)->city);
 }
 
 
+/**
+ * @description print_results - Prints the results of the city measurement.
+ * @results: Pointer to an array of City structs.
+ * @nresults: Number of City structs in the array.
+ * @param results
+ * @param nresults
+ */
 void print_results(struct City results[], int nresults) {
     char buf[1024 * 16];
     char *b = buf;
@@ -41,6 +62,17 @@ void print_results(struct City results[], int nresults) {
     puts(buf);
 }
 
+
+/**
+ * @description parse_city - Parses a city name from a string.
+ * @city: Pointer to a buffer where the city name will be stored.
+ * @results: Pointer to an array of City structs.
+ * @resultCount: Number of City structs in the array.
+ * @param city
+ * @param results
+ * @param resultCount
+ * @return int
+ */
 static int parseCity(const char *city, struct City results[], int resultCount) {
     for (int i = 0; i < resultCount; i++) {
         if (strcmp(results[i].city, city) == 0) {

@@ -13,7 +13,14 @@ struct City {
     double sum, min, max;
 };
 
-// hash returns a simple (but fast) hash for the first n bytes of data
+/**
+ * @description: hash - Returns a simple (but fast) hash for the first n bytes of data.
+ * @data: Pointer to the data to be hashed.
+ * @n: Number of bytes to hash.
+ * @param data
+ * @param n
+ * @return hash
+ */
 static unsigned int hash(const unsigned char *data, int n) {
     unsigned int hash = 0;
 
@@ -24,6 +31,12 @@ static unsigned int hash(const unsigned char *data, int n) {
     return hash;
 }
 
+/**
+ * @description compareStr - Compares two cities by their name.
+ * @param ptr_a
+ * @param ptr_b
+ * @return bool
+ */
 static int compareStr(const void *ptr_a, const void *ptr_b) {
     return strcmp(((struct City *) ptr_a)->city, ((struct City *) ptr_b)->city);
 }

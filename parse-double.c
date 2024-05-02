@@ -12,7 +12,14 @@ struct City {
     double sum, min, max;
 };
 
-// hash returns a simple (but fast) hash for the first n bytes of data
+/**
+ * @description: hash - Returns a simple (but fast) hash for the first n bytes of data.
+ * @data: Pointer to the data to be hashed.
+ * @n: Number of bytes to hash.
+ * @param data
+ * @param n
+ * @return hash
+ */
 static unsigned int hash(const unsigned char *data, int n) {
     unsigned int hash = 0;
 
@@ -23,11 +30,24 @@ static unsigned int hash(const unsigned char *data, int n) {
     return hash;
 }
 
+
+/**
+ * @description compareStr - Compares two cities by their name.
+ * @param ptr_a
+ * @param ptr_b
+ * @return bool
+ */
 static int compareStr(const void *ptr_a, const void *ptr_b) {
     return strcmp(((struct City *)ptr_a)->city, ((struct City *)ptr_b)->city);
 }
 
 
+
+/**
+ * @description printResults - Prints the results of the parsing.
+ * @param results
+ * @param resultCount
+ */
 void printResults(const struct City *results, const int *resultCount) {
     for (int i = 0; i < resultCount; i++) {
         printf("%s=%.1f/%.1f/%.1f%s", results[i].city, results[i].min,
@@ -41,7 +61,7 @@ void printResults(const struct City *results, const int *resultCount) {
  * parse_double - Parses a string into a double value.
  * @dest: Pointer to a double where the parsed value will be stored.
  * @s: Pointer to the string to be parsed.
- *
+ * @example:
  * The function first checks if the first character of the string is a minus sign (-).
  * If it is, it sets mod to -1.0 and increments the string pointer s to point to the next character.
  * If the first character is not a minus sign, mod is set to 1.0.
