@@ -14,16 +14,20 @@ if __name__ == '__main__':
 
     df = pd.read_csv('charts/performance.csv')
 
-    df = df.drop(columns=['Relative Speedup V2', 'Relative Speedup V3', 'Relative Speedup V4', 'Relative Speedup V5',
-                          'Relative Speedup V6', 'Relative Speedup V7'])
+    df = df.drop(columns=['Relative Speedup hashmap', 'Relative Speedup parse-double', 'Relative Speedup fread-chunks',
+                          'Relative Speedup loop-unrolling', 'Relative Speedup parallelize', 'Relative Speedup mmap'])
     # drop first 2 rows
     df = df.drop([0, 1])
 
     # Plot
     plt.figure(figsize=(10, 6))
 
+    # craete colour dict for each method
+    colour_dict = {'linear-search': 'red', 'hashmap': 'blue', 'parse-double': 'green', 'fread-chunks': 'orange',
+                   'loop-unrolling': 'purple', 'parallelize': 'cyan', 'mmap': 'magenta'}
+
     for column in df.columns[1:]:
-        plt.plot(df["File Size (Lines)"], df[column], marker='o', label=column)
+        plt.plot(df["File Size (Lines)"], df[column], marker='o', label=column, color=colour_dict[column])
 
     plt.title('Absolute Runtimes of Methods')
     plt.xlabel('File Size (Lines)')
@@ -42,4 +46,5 @@ if __name__ == '__main__':
 
     plt.legend()
     plt.tight_layout()
+    plt.savefig('charts/performance.png')
     plt.show()

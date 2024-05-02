@@ -32,7 +32,7 @@ static unsigned int hash(const unsigned char *data, int n) {
 }
 
 /**
- * @description compareStr - Compares two cities by their name.
+ * @description compareGroup - Compares two cities by their name.
  * @param ptr_a
  * @param ptr_b
  * @return bool

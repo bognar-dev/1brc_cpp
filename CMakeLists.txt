@@ -16,6 +16,9 @@ add_executable(fread-chunks fread-chunks.c)
 
 add_executable(loop-unrolling loop-unrolling.c)
 
+add_executable(parallelize parallelize.c)
+
+add_executable(mmap mmap.c)
 
 set(CMAKE_C_STANDARD 11)
 
@@ -32,7 +35,7 @@ target_link_libraries(hashmap m Threads::Threads)
 target_link_libraries(parse-double m Threads::Threads)
 target_link_libraries(fread-chunks m Threads::Threads)
 target_link_libraries(loop-unrolling m Threads::Threads)
-
-
+target_link_libraries(parallelize m Threads::Threads)
+target_link_libraries(mmap m Threads::Threads)
 
 

@@ -8,8 +8,8 @@ PROGRAMS=(
     "parse-double"
     "fread-chunks"
     "loop-unrolling"
-    #"parallelize"
-    #"mmap"
+    "parallelize"
+    "mmap"
 )
 
 DESCRIPTIONS=(
@@ -35,7 +35,7 @@ done
 # Create a CSV file to store the runtimes
 echo "File,Program,Description,Runtime1,Runtime2,Runtime3" > runtimes.csv
 cd cmake-build-debug || exit
-make hashmap parse-double fread-chunks loop-unrolling
+make hashmap parse-double fread-chunks loop-unrolling parallelize mmap
 # Loop over all files in the FILES array
 for FILE in "${FILES[@]}"; do
     if [ -f "$FILE" ]; then

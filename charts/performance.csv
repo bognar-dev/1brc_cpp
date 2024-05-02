@@ -1,4 +1,4 @@
-File Size (Lines),Version 1,Version 2,Version 3,Version 4,Version 5,Version 6,Version 7,Relative Speedup V2,Relative Speedup V3,Relative Speedup V4,Relative Speedup V5,Relative Speedup V6,Relative Speedup V7
+File Size (Lines),linear-search,hashmap,parse-double,fread-chunks,loop-unrolling,parallelize,mmap,Relative Speedup hashmap,Relative Speedup parse-double,Relative Speedup fread-chunks,Relative Speedup loop-unrolling,Relative Speedup parallelize,Relative Speedup mmap
 1000,0,0,0,0,0,0.01,0,N/A,N/A,N/A,N/A,N/A,N/A
 10000,0.03,0.01,0,0,0,0.01,0.01,66.66666667,100,100,100,66.66666667,66.66666667
 100000,0.09,0.03,0.02,0.01,0.01,0.01,0.01,66.66666667,77.77777778,88.88888889,88.88888889,88.88888889,88.88888889

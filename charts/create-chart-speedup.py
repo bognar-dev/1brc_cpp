@@ -14,20 +14,23 @@ if __name__ == '__main__':
 
     # Continue with your plotting code...
     # Load data from CSV into a DataFrame
-    df = pd.read_csv('performance.csv')
+    df = pd.read_csv('charts/performance.csv')
 
-    # remove the Method 1,Method 2,Method 3,Method 4,Method 5,Method 6,Method 7
-    df = df.drop(columns=['Version 1', 'Version 2', 'Version 3', 'Version 4', 'Version 5', 'Version 6', 'Version 7'])
+    df = df.drop(
+        columns=['linear-search', 'hashmap', 'parse-double', 'fread-chunks', 'loop-unrolling', 'parallelize', 'mmap'])
     # drop first 2 rows
     df = df.drop([0, 1])
 
+    colour_dict = {'linear-search': 'red', 'Relative Speedup hashmap': 'blue', 'Relative Speedup parse-double': 'green',
+                   'Relative Speedup fread-chunks': 'orange', 'Relative Speedup loop-unrolling': 'purple',
+                   'Relative Speedup parallelize': 'cyan', 'Relative Speedup mmap': 'magenta'}
     # Plot
     plt.figure(figsize=(10, 6))
 
     for column in df.columns[1:]:
-        plt.plot(df["File Size (Lines)"], df[column], marker='o', label=column)
+        plt.plot(df["File Size (Lines)"], df[column], marker='o', label=column, color=colour_dict[column])
 
-    plt.title('Relative Speedup of Methods compared to Different Versions')
+    plt.title('Relative Speedup of Methods compared to Linear Search')
     plt.xlabel('File Size (Lines)')
     plt.ylabel('Relative Speedup (%)')
     plt.xscale('log')
@@ -46,4 +49,5 @@ if __name__ == '__main__':
 
     plt.legend()
     plt.tight_layout()
+    plt.savefig('charts/performance-speedup.png')
     plt.show()
