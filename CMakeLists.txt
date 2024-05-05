@@ -5,7 +5,6 @@ project(1BRC)
 
 add_executable(create-sample create-sample.c)
 
-
 add_executable(linear-search linear-search.c)
 
 add_executable(hashmap hashmap.c)
@@ -22,7 +21,7 @@ add_executable(mmap mmap.c)
 
 set(CMAKE_C_STANDARD 11)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -mtune=native -flto -Wall -Wextra -Wpedantic -Wformat=2 -Wconversion -Wundef -Winline -Wimplicit-fallthrough")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -march=native -mtune=native -flto -Wall -Wextra -Wpedantic -Wformat=2 -Wconversion -Wundef -Winline -Wimplicit-fallthrough ")
 
 if(DEBUG)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_FORTIFY_SOURCE=2 -D_GLIBCXX_ASSERTIONS -fsanitize=address -fsanitize=undefined -g -fstack-protector-strong")

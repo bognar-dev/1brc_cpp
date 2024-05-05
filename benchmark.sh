@@ -32,16 +32,20 @@ for lines in "${line_counts[@]}"; do
     FILES+=("../data/measurement_${lines}_lines.txt")
 done
 
-# Create a CSV file to store the runtimes
-echo "File,Program,Description,Runtime1,Runtime2,Runtime3" > runtimes.csv
+# Create a CSV file to store the runtimes if it doesnt exits create it
+if [ ! -f "../charts/runtimes.csv" ]; then
+    touch ../charts/runtimes.csv
+fi
+
+echo "File,Program,Description,Runtime1,Runtime2,Runtime3" > ../charts/runtimes.csv
 cd cmake-build-debug || exit
-make hashmap parse-double fread-chunks loop-unrolling parallelize mmap
+make hashmap parse-double fread-chunks loop-unrolling parallelize mmap linear-search
 # Loop over all files in the FILES array
 for FILE in "${FILES[@]}"; do
     if [ -f "$FILE" ]; then
         for PROGRAM in "${PROGRAMS[@]}"; do
 
-
+            echo "Running $PROGRAM on $FILE..."
             # run each program 3 times, capturing time output
             TIMES=()
             for n in {1..3}; do
@@ -53,7 +57,8 @@ for FILE in "${FILES[@]}"; do
             printf "$FILE,$PROGRAM,${DESCRIPTIONS[$PROGRAM]},${TIMES[0]},${TIMES[1]},${TIMES[2]}\n"
 
             # Write the data to the CSV file
-            echo "$FILE,$PROGRAM,${DESCRIPTIONS[$PROGRAM]},${TIMES[0]},${TIMES[1]},${TIMES[2]}" >> runtimes.csv
+            # shellcheck disable=SC2028
+            echo "$FILE,$PROGRAM,${DESCRIPTIONS[$PROGRAM]},${TIMES[0]},${TIMES[1]},${TIMES[2]}" >> ../charts/runtimes.csv
         done
     else
         echo "File $FILE does not exist."

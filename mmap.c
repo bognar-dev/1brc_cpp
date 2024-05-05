@@ -194,7 +194,7 @@ void result_to_str(char *dest, const struct Result *result) {
 }
 
 int main(int argc, char **argv) {
-    char *file = "measurements.txt";
+    char *file = "../data/measurements.txt";
     if (argc > 1) {
         file = argv[1];
     }
@@ -213,6 +213,11 @@ int main(int argc, char **argv) {
 
     // mmap entire file into memory
     size_t sz = (size_t)sb.st_size;
+
+    if(sz == 0){
+        perror("filesize is 0, probably empty file");
+        exit(EXIT_FAILURE);
+    }
     const char *data = mmap(NULL, sz, PROT_READ, MAP_SHARED, fd, 0);
     if (data == MAP_FAILED) {
         perror("error mmapping file");

@@ -82,7 +82,7 @@ int main(int argc, const char **argv) {
         }
     }
 
-    qsort(results, (size_t) resultCount, sizeof(*results), compareGroup);
+    qsort(results, (size_t) resultCount, sizeof(*results), compareStr);
 
     printResults(results, &resultCount);
 

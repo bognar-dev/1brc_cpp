@@ -11,28 +11,34 @@ def human_readable(num):
 
 
 if __name__ == '__main__':
+    df = pd.read_csv('charts/runtimes.csv', index_col='Program')
+    df['File Size (Lines)'] = df['File'].apply(lambda x: int(x.split('_')[1].split('.')[0]))
+    df['AvGRuntime'] = df[['Runtime1', 'Runtime2', 'Runtime3']].mean(axis=1)
+    pivot_df = df.pivot_table(index='File Size (Lines)', columns='Program', values='AvGRuntime', aggfunc='sum')
 
-    # Continue with your plotting code...
-    # Load data from CSV into a DataFrame
-    df = pd.read_csv('charts/performance.csv')
+    pivot_df = pivot_df.iloc[2:]
+    # Reset the index to make 'File Size (Lines)' a regular column
+    pivot_df.reset_index(inplace=True)
+    linear_search_runtime = pivot_df["linear-search"]
+    filesizes = pivot_df["File Size (Lines)"]
+    speedup_df = pivot_df.drop(columns=["File Size (Lines)", "linear-search"]).apply(
+        lambda col: (linear_search_runtime - col) / linear_search_runtime * 100)
 
-    df = df.drop(
-        columns=['linear-search', 'hashmap', 'parse-double', 'fread-chunks', 'loop-unrolling', 'parallelize', 'mmap'])
-    # drop first 2 rows
-    df = df.drop([0, 1])
+    # Move the addition of the 'Lines' column after dropping unnecessary columns
+    speedup_df['Lines'] = filesizes
 
-    colour_dict = {'linear-search': 'red', 'Relative Speedup hashmap': 'blue', 'Relative Speedup parse-double': 'green',
-                   'Relative Speedup fread-chunks': 'orange', 'Relative Speedup loop-unrolling': 'purple',
-                   'Relative Speedup parallelize': 'cyan', 'Relative Speedup mmap': 'magenta'}
-    # Plot
+    # Create colour dict for each method
+    colour_dict = {'linear-search': 'red', 'hashmap': 'blue', 'parse-double': 'green', 'fread-chunks': 'orange',
+                   'loop-unrolling': 'purple', 'parallelize': 'cyan', 'mmap': 'magenta'}
+
     plt.figure(figsize=(10, 6))
+    df = speedup_df
+    for column in df.columns[:-1]:
+        plt.plot(df["Lines"], df[column], marker='o', label=column, color=colour_dict[column])
 
-    for column in df.columns[1:]:
-        plt.plot(df["File Size (Lines)"], df[column], marker='o', label=column, color=colour_dict[column])
-
-    plt.title('Relative Speedup of Methods compared to Linear Search')
+    plt.title('Speedup of Methods compared to Linear Search')
     plt.xlabel('File Size (Lines)')
-    plt.ylabel('Relative Speedup (%)')
+    plt.ylabel('Runtime (s)')
     plt.xscale('log')
     plt.yscale('log')
     plt.grid(True, which="both", ls="--")
@@ -40,11 +46,9 @@ if __name__ == '__main__':
     # Get x-ticks and convert them to human readable format
     xticks = plt.xticks()[0]
     plt.xticks(xticks, [human_readable(xtick) for xtick in xticks], rotation='vertical')
-    # remove the first 2 and last 2 x-ticks and start at the new first x-tick
-    plt.xticks(xticks[2:-2])
-    # start from the 100000 x-tick
-    padding_left = 10000
-    padding_right = 10000000
+
+    padding_left = 10
+    padding_right = 100000000
     plt.xlim(100000 - padding_left, 1000000000 + padding_right)
 
     plt.legend()

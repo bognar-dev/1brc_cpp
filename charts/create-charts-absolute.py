@@ -12,12 +12,13 @@ def human_readable(num):
 
 if __name__ == '__main__':
 
-    df = pd.read_csv('charts/performance.csv')
+    df = pd.read_csv('charts/runtimes.csv',index_col='Program')
+    df['File Size (Lines)'] = df['File'].apply(lambda x: int(x.split('_')[1].split('.')[0]))
+    df['AvGRuntime'] = df[['Runtime1', 'Runtime2', 'Runtime3']].mean(axis=1)
+    pivot_df = df.pivot_table(index='File Size (Lines)', columns='Program', values='AvGRuntime', aggfunc='sum')
 
-    df = df.drop(columns=['Relative Speedup hashmap', 'Relative Speedup parse-double', 'Relative Speedup fread-chunks',
-                          'Relative Speedup loop-unrolling', 'Relative Speedup parallelize', 'Relative Speedup mmap'])
-    # drop first 2 rows
-    df = df.drop([0, 1])
+    # Reset the index to make 'File Size (Lines)' a regular column
+    pivot_df.reset_index(inplace=True)
 
     # Plot
     plt.figure(figsize=(10, 6))
@@ -26,8 +27,8 @@ if __name__ == '__main__':
     colour_dict = {'linear-search': 'red', 'hashmap': 'blue', 'parse-double': 'green', 'fread-chunks': 'orange',
                    'loop-unrolling': 'purple', 'parallelize': 'cyan', 'mmap': 'magenta'}
 
-    for column in df.columns[1:]:
-        plt.plot(df["File Size (Lines)"], df[column], marker='o', label=column, color=colour_dict[column])
+    for column in pivot_df.columns[1:]:
+        plt.plot(pivot_df["File Size (Lines)"], pivot_df[column], marker='o', label=column, color=colour_dict[column])
 
     plt.title('Absolute Runtimes of Methods')
     plt.xlabel('File Size (Lines)')
