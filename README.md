@@ -18,7 +18,15 @@ C programming language. By adapting ideas from Java implementations and applying
 possibilities of C in effectively processing big datasets. The study investigates techniques and evaluates their success
 in terms of runtime reduction.
 
+
+## Results
+![performance.png](/charts%2Fperformance.png)
+![performance-speedup.png](/charts%2Fperformance-speedup.png)
+[performance.csv](/charts%2Fperformance.csv)
+[runtimes.csv](/charts%2Fruntimes.csv)
 ## 2. Objective
+![Objective.png](/images%2FObjective.png)
+
 
 ## 3. Iterative Versions
 
