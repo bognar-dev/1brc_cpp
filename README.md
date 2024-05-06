@@ -18,15 +18,16 @@ C programming language. By adapting ideas from Java implementations and applying
 possibilities of C in effectively processing big datasets. The study investigates techniques and evaluates their success
 in terms of runtime reduction.
 
-
 ## Results
+
 ![performance.png](/charts%2Fperformance.png)
 ![performance-speedup.png](/charts%2Fperformance-speedup.png)
 [performance.csv](/charts%2Fperformance.csv)
 [runtimes.csv](/charts%2Fruntimes.csv)
-## 2. Objective
-![Objective.png](/images%2FObjective.png)
 
+## 2. Objective
+
+![Objective.png](/images%2FObjective.png)
 
 ## 3. Iterative Versions
 
@@ -134,11 +135,28 @@ Memory mapping reduced runtime from 638.15 seconds (baseline) to 22.58 seconds, 
 
 ## 6. Conclusion
 
-The implementation of optimized algorithms and parallel processing techniques is crucial for improving runtime
-efficiency in data processing tasks. The results of this study highlight the importance of algorithmic efficiency and
-parallelism, highlighting their significant impact on the performance of data processing systems. By leveraging
-optimized algorithms and parallel processing, organizations can achieve substantial improvements in runtime efficiency,
-enabling faster and more effective data analysis and decision-making processes.
+The evaluation of various optimization strategies and parallel processing methodologies in handling the One Billion Row
+Challenge (1BRC) dataset has offered important insights into the area of big data processing. Through repeated versions
+of the implementation, including baseline linear search, loop unrolling, hashmap with linear probing, parallelization,
+and memory mapping, notable increases in runtime performance were noted across many contexts.
+
+The analysis discovered that the efficiency of each optimization technique changed based on the particular attributes of
+the dataset and the nature of the processing jobs. Techniques such as loop unrolling demonstrated huge benefits in
+minimising overhead and enhancing instruction-level parallelism, leading to substantial speed gains. Similarly,
+parallelization methods, including threading and hashmap with linear probing, proved effective in spreading the workload
+over several processors, resulting in significant speedups in data processing.
+
+The use of memory mapping (mmap()) developed as a particularly successful improvement, enabling faster data access and
+reduced I/O cost by mapping the entire file into memory. This method proved helpful, especially when working with huge
+datasets like the 1BRC dataset, where disk I/O operations can become a bottleneck.
+The findings underscore the critical role of algorithmic efficiency and parallelism in tackling the issues faced by
+massive data processing workloads. By adopting efficient algorithms and parallel processing methodologies, firms can
+make large advances in runtime efficiency, thereby accelerating data analysis and decision-making processes.
+
+Moving forward, further research and experimentation are necessary to evaluate further optimization approaches and their
+prospective synergies. Additionally, considerations like as scalability, resource utilization, and adaptation to various
+datasets will be crucial for the continued improvement of data processing systems in managing increasingly huge and
+intricate datasets.
 
 ## References
 
