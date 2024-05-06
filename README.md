@@ -1,6 +1,8 @@
 # The One Billion Row Challenge:
+
 Data Processing at Scale
 What is the best way of processing a billion rows of data in the least amount of runtime?
+
 ## Author
 
 NIKLAS STEFAN BOGNAR  
@@ -124,9 +126,11 @@ Memory mapping reduced runtime from 638.15 seconds (baseline) to 22.58 seconds, 
 
 ## 6. Conclusion
 
-Summarize your study and let the viewers know two to three key findings. You can also add a description of each that can
-give them an idea of what comes next. This section can also include any implications of the study, and if there are any
-actions or recommendations for future study.
+The implementation of optimized algorithms and parallel processing techniques is crucial for improving runtime
+efficiency in data processing tasks. The results of this study highlight the importance of algorithmic efficiency and
+parallelism, highlighting their significant impact on the performance of data processing systems. By leveraging
+optimized algorithms and parallel processing, organizations can achieve substantial improvements in runtime efficiency,
+enabling faster and more effective data analysis and decision-making processes.
 
 ## References
 
