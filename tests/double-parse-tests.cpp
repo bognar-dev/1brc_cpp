@@ -61,6 +61,7 @@ TEST_F(ParsingTest, CustomParsingTime) {
     // percentage speedup
     double speedup = regular_time / custom_time;
     std::cout << "Speedup: " << speedup << "\n";
+    ASSERT_GT(speedup, 1.0);
 }
 
 int main(int argc, char **argv) {
