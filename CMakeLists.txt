@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.10)
 project(1BRC)
 
 
+add_subdirectory(tests)
+
 add_executable(create-sample create-sample.c)
 
 add_executable(linear-search linear-search.c)
