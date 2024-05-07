@@ -10,6 +10,22 @@ Comp. Sci. 203
 Algorithms and Data Structures  
 [GitHub Repository](https://github.com/bognar-dev/1brc_cpp)
 
+## How to run it
+
+First run
+```
+cmake .
+```
+then
+```
+./create-samples.sh
+```
+then
+```
+./benchmark.sh
+```
+
+
 ## 1. Introduction
 
 Initially set up by Gunnar Morling, the One Billion Row Challenge (1BRC) [1] primarily targeted Java developers, tasking
